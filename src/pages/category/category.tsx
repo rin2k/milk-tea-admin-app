@@ -1,193 +1,114 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Col,
-  Drawer,
-  Form,
-  Input,
-  Modal,
-  Popconfirm,
-  Space,
-  Table,
-} from "antd";
+import { db } from "@config";
+import { COLLECTIONS } from "@constants";
+
+import { useCategory } from "@hooks";
+import { RootState } from "@redux";
+import { COLORS } from "@styles";
+import { ICategory } from "@types";
+import { Button, Form, message, Popconfirm, Space, Table } from "antd";
+import { deleteDoc, doc } from "firebase/firestore";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addCategory,
-  deleteCategory,
-  RootState,
-  updateCategory,
-} from "../../redux";
-import { Category } from "../../types/category";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { CreateCategory } from "./create-category";
+import { EditCategory } from "./edit-category";
 
 export const CategoryPage: React.FC = () => {
-  const [openModalAdd, setOpenModalAdd] = useState(false);
-  const [openDrawerEdit, setOpenDrawerEdit] = useState(false);
-  const [formAdd] = Form.useForm();
+  const { t } = useTranslation([], { keyPrefix: "category" });
+  const [openCreateModal, setOpenCreateModal] = useState<boolean>(false);
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
   const [formEdit] = Form.useForm();
 
-  const dispatch = useDispatch();
+  const data = useSelector((state: RootState) => state.category);
+  useCategory();
 
-  const dataCategory = useSelector((state: RootState) => state.category);
-
-  const showModalAdd = () => {
-    setOpenModalAdd(true);
+  const showModalEdit = (category: ICategory) => {
+    setOpenEditModal(true);
+    formEdit.setFieldValue("id", category.id);
+    formEdit.setFieldValue("name", category.name);
   };
 
-  const handleCloseModalAdd = () => {
-    setOpenModalAdd(false);
-    formAdd.resetFields();
-  };
-
-  const handleOkModalAdd = () => {
-    formAdd.submit();
-  };
-  const onFinishModalAdd = (values: Category) => {
-    const fakeObj: Category = {
-      id: Math.random(),
-      name: values.name,
-    };
-    dispatch(addCategory(fakeObj));
-    formAdd.resetFields();
-    setOpenModalAdd(false);
-  };
-
-  const showDrawerEdit = (product: Category) => {
-    setOpenDrawerEdit(true);
-    formEdit.setFieldValue("id", product.id);
-    formEdit.setFieldValue("name", product.name);
-  };
-
-  const handleCloseDrawerEdit = () => {
-    setOpenDrawerEdit(false);
-    formEdit.resetFields();
-  };
-
-  const handleOkDrawerEdit = () => {
-    formEdit.submit();
-  };
-
-  const onFinishDrawerEdit = (values: Category) => {
-    const fakeObj: Category = {
-      id: values.id,
-      name: values.name,
-    };
-    dispatch(updateCategory(fakeObj));
-    setOpenDrawerEdit(false);
-  };
-
-  const onConfirmDelete = (category: Category) => {
-    dispatch(deleteCategory(category));
+  const onConfirmDelete = (category: ICategory) => {
+    const categoryDoc = doc(db, COLLECTIONS.CATEGORIES, category.id);
+    deleteDoc(categoryDoc);
+    message.success(t("deletedSuccessfully"));
   };
 
   const columns = [
+    // {
+    //   title: t("categoryId"),
+    //   dataIndex: "id",
+    //   key: "id",
+    // },
     {
-      title: "Danh mục",
+      title: t("categoryName"),
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Action",
+      title: t("action"),
       key: "action",
-      render: (category: Category) => (
+      render: (category: ICategory) => (
         <Space size="middle">
           <Button
             type={"text"}
             icon={<EditOutlined />}
-            style={{ color: "blue" }}
+            style={{ color: COLORS.blue }}
             onClick={() => {
-              showDrawerEdit(category);
+              showModalEdit(category);
             }}
           />
-
           <Popconfirm
-            title="Xác nhận xoá"
-            description="Bạn có chắc chắn muốn xoá danh mục này?"
+            title={t("delete")}
+            description={t("wantToDelete")}
             onConfirm={() => {
               onConfirmDelete(category);
             }}
-            okText="Yes"
-            cancelText="No"
+            okText={t("okText")}
+            cancelText={t("cancelText")}
           >
             <Button
               type={"text"}
               icon={<DeleteOutlined />}
-              style={{ color: "red" }}
+              style={{ color: COLORS.red }}
             />
           </Popconfirm>
         </Space>
       ),
     },
   ];
-  const renderAdd = () => {
-    return (
-      <Modal
-        open={openModalAdd}
-        onOk={handleOkModalAdd}
-        onCancel={handleCloseModalAdd}
-      >
-        <Form layout="vertical" onFinish={onFinishModalAdd} form={formAdd}>
-          <Col span={24}>
-            <Form.Item
-              name="name"
-              label="Tên danh mục"
-              rules={[{ required: true, message: "Vui lòng nhập" }]}
-            >
-              <Input placeholder="Vui lòng nhập" />
-            </Form.Item>
-          </Col>
-        </Form>
-      </Modal>
-    );
-  };
-
-  const renderDetail = () => {
-    return (
-      <Drawer
-        width={"50%"}
-        onClose={handleCloseDrawerEdit}
-        open={openDrawerEdit}
-        bodyStyle={{ paddingBottom: 80 }}
-        extra={
-          <Space>
-            <Button onClick={handleCloseDrawerEdit}>Cancel</Button>
-            <Button type="primary" onClick={handleOkDrawerEdit}>
-              OK
-            </Button>
-          </Space>
-        }
-      >
-        <Form layout="vertical" onFinish={onFinishDrawerEdit} form={formEdit}>
-          <Col span={24}>
-            <Form.Item hidden name="id" label="id" />
-          </Col>
-          <Col span={24}>
-            <Form.Item
-              name="name"
-              label="Tên danh mục"
-              rules={[{ required: true, message: "Vui lòng nhập" }]}
-            >
-              <Input placeholder="Vui lòng nhập" />
-            </Form.Item>
-          </Col>
-        </Form>
-      </Drawer>
-    );
-  };
 
   return (
     <>
       <Button
         type="primary"
-        onClick={showModalAdd}
+        onClick={() => {
+          setOpenCreateModal(true);
+        }}
         icon={<PlusOutlined />}
         style={{ marginTop: 10, marginBottom: 10 }}
       >
-        Thêm danh mục
+        {t("create")}
       </Button>
-      {renderAdd()}
-      <Table dataSource={dataCategory} columns={columns} />
-      {renderDetail()}
+      <Table dataSource={data} columns={columns} />
+      {openCreateModal && (
+        <CreateCategory
+          open={openCreateModal}
+          onCancel={() => {
+            setOpenCreateModal(false);
+          }}
+        />
+      )}
+      {openEditModal && (
+        <EditCategory
+          form={formEdit}
+          open={openEditModal}
+          onCancel={() => {
+            setOpenEditModal(false);
+          }}
+        />
+      )}
     </>
   );
 };

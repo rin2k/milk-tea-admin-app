@@ -6,7 +6,7 @@ const initialState: Product[] = [
     id: 1,
     name: "Trà lúa mach",
     category: {
-      id: 1,
+      // id: 1,
       name: "Trà",
     },
     price: 20000,

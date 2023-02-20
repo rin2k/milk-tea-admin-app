@@ -1,256 +1,142 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { db } from "@config";
+import { COLLECTIONS } from "@constants";
+import { useCategory } from "@hooks";
+import { COLORS } from "@styles";
+import { IProduct } from "@types";
+import { Button, Form, message, Select, Space, Table } from "antd";
 import {
-  Button,
-  Col,
-  Drawer,
-  Form,
-  Input,
-  message,
-  Modal,
-  Popconfirm,
-  Select,
-  Space,
-  Table,
-} from "antd";
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addProduct,
-  deleteProduct,
-  RootState,
-  updateProduct,
-} from "../../redux";
-import { Product } from "../../types/product";
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { CreateProduct } from "./create-product";
+import { EditProduct } from "./edit-product";
 
 const { Option } = Select;
 
 export const ProductPage: React.FC = () => {
-  const [openModalAdd, setOpenModalAdd] = useState(false);
-  const [openDrawerEdit, setOpenDrawerEdit] = useState(false);
-  const [formAdd] = Form.useForm();
+  const { t } = useTranslation([], { keyPrefix: "product" });
+  const [openModalCreate, setOpenModalCreate] = useState<boolean>(false);
+  const [openModalEdit, setOpenModalEdit] = useState(false);
+
   const [formEdit] = Form.useForm();
 
-  const dispatch = useDispatch();
+  useCategory();
 
-  const dataProduct = useSelector((state: RootState) => state.product);
-  const dataCategory = useSelector((state: RootState) => state.category);
-  const showModalAdd = () => {
-    setOpenModalAdd(true);
-  };
+  const [dataProduct, setDataProduct] = useState<Array<IProduct>>([]);
 
-  const handleCloseModalAdd = () => {
-    setOpenModalAdd(false);
-    formAdd.resetFields();
-  };
+  useEffect(() => {
+    const q = query(
+      collection(db, COLLECTIONS.PRODUCTS),
+      orderBy("createdAt", "desc")
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const newData: any = snapshot.docs.map((doc: any) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setDataProduct(newData);
+    });
+    return () => unsubscribe();
+  }, []);
 
-  const handleOkModalAdd = () => {
-    formAdd.submit();
-  };
-  const onFinishModalAdd = (values: any) => {
-    const filterCategory = dataCategory.find((e) => e.id === values.category);
-
-    if (filterCategory !== undefined) {
-      const fakeObj: Product = {
-        id: Math.random(),
-        name: values.name,
-        price: values.price,
-        category: filterCategory,
-      };
-      dispatch(addProduct(fakeObj));
-      formAdd.resetFields();
-      setOpenModalAdd(false);
-    }
-  };
-
-  const showDrawerEdit = (product: Product) => {
-    setOpenDrawerEdit(true);
+  const showModalEdit = (product: IProduct) => {
+    setOpenModalEdit(true);
     formEdit.setFieldValue("id", product.id);
     formEdit.setFieldValue("name", product.name);
+    formEdit.setFieldValue("description", product.description);
     formEdit.setFieldValue("price", product.price);
-    formEdit.setFieldValue("category", product.category.name);
+    formEdit.setFieldValue("category", product.category);
+    formEdit.setFieldValue("quantity", product.quantity);
+    formEdit.setFieldValue("image", product.image);
   };
 
-  const handleCloseDrawerEdit = () => {
-    setOpenDrawerEdit(false);
-    formEdit.resetFields();
-  };
-
-  const handleOkDrawerEdit = () => {
-    formEdit.submit();
-  };
-
-  const onFinishDrawerEdit = (values: Product) => {
-    const fakeObj: Product = {
-      id: values.id,
-      name: values.name,
-      price: values.price,
-      category: values.category,
-    };
-    dispatch(updateProduct(fakeObj));
-    setOpenDrawerEdit(false);
-  };
-
-  const onConfirmDelete = (product: Product) => {
-    dispatch(deleteProduct(product));
+  const onConfirmDelete = (product: IProduct) => {
+    const productDoc = doc(db, COLLECTIONS.PRODUCTS, product.id);
+    deleteDoc(productDoc);
+    message.success(t("deletedSuccessfully"));
   };
 
   const columns = [
     {
-      title: "Sản phẩm",
+      title: t("productName"),
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Giá sản phẩm",
+      title: t("productPrice"),
       dataIndex: "price",
       key: "price",
     },
     {
-      title: "Action",
+      title: t("action"),
       key: "action",
-      render: (product: Product) => (
+      render: (product: IProduct) => (
         <Space size="middle">
           <Button
             type={"text"}
             icon={<EditOutlined />}
-            style={{ color: "blue" }}
+            style={{ color: COLORS.blue }}
             onClick={() => {
-              showDrawerEdit(product);
+              showModalEdit(product);
             }}
           />
-
-          <Popconfirm
-            title="Xác nhận xoá"
-            description="Bạn có chắc chắn muốn xoá sản phẩm này?"
+          {/* <Popconfirm
+            title={t("delete")}
+            description={t("wantToDelete")}
             onConfirm={() => {
               onConfirmDelete(product);
             }}
-            okText="Yes"
-            cancelText="No"
+            okText={t("okText")}
+            cancelText={t("cancelText")}
           >
             <Button
               type={"text"}
               icon={<DeleteOutlined />}
-              style={{ color: "red" }}
+              style={{ color: COLORS.red }}
             />
-          </Popconfirm>
+          </Popconfirm> */}
         </Space>
       ),
     },
   ];
-  const renderAdd = () => {
-    return (
-      <Modal
-        open={openModalAdd}
-        onOk={handleOkModalAdd}
-        onCancel={handleCloseModalAdd}
-      >
-        <Form layout="vertical" onFinish={onFinishModalAdd} form={formAdd}>
-          <Col span={24}>
-            <Form.Item
-              name="name"
-              label="Tên sản phẩm"
-              rules={[{ required: true, message: "Vui lòng nhập" }]}
-            >
-              <Input placeholder="Vui lòng nhập" />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item
-              name="category"
-              label="Danh mục"
-              rules={[{ required: true, message: "Vui lòng chọn" }]}
-            >
-              <Select placeholder="Vui lòng chọn">
-                {dataCategory.map((e) => {
-                  return <Option value={e.id}>{e.name}</Option>;
-                })}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item
-              name="price"
-              label="Giá sản phẩm"
-              rules={[{ required: true, message: "Vui lòng nhập" }]}
-            >
-              <Input placeholder="Vui lòng nhập" type={"number"} />
-            </Form.Item>
-          </Col>
-        </Form>
-      </Modal>
-    );
-  };
-
-  const renderDetail = () => {
-    return (
-      <Drawer
-        width={"50%"}
-        onClose={handleCloseDrawerEdit}
-        open={openDrawerEdit}
-        bodyStyle={{ paddingBottom: 80 }}
-        extra={
-          <Space>
-            <Button onClick={handleCloseDrawerEdit}>Cancel</Button>
-            <Button type="primary" onClick={handleOkDrawerEdit}>
-              OK
-            </Button>
-          </Space>
-        }
-      >
-        <Form layout="vertical" onFinish={onFinishDrawerEdit} form={formEdit}>
-          <Col span={24}>
-            <Form.Item hidden name="id" label="id" />
-          </Col>
-          <Col span={24}>
-            <Form.Item
-              name="name"
-              label="Tên sản phẩm"
-              rules={[{ required: true, message: "Vui lòng nhập" }]}
-            >
-              <Input placeholder="Vui lòng nhập" />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item
-              name="category"
-              label="Danh mục"
-              rules={[{ required: true, message: "Vui lòng chọn" }]}
-            >
-              <Select placeholder="Vui lòng chọn">
-                {dataCategory.map((e) => {
-                  return <Option value={e.name}>{e.name}</Option>;
-                })}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item
-              name="price"
-              label="Giá sản phẩm"
-              rules={[{ required: true, message: "Vui lòng nhập" }]}
-            >
-              <Input placeholder="Vui lòng nhập" type={"number"} />
-            </Form.Item>
-          </Col>
-        </Form>
-      </Drawer>
-    );
-  };
 
   return (
     <>
       <Button
         type="primary"
-        onClick={showModalAdd}
+        onClick={() => {
+          setOpenModalCreate(true);
+        }}
         icon={<PlusOutlined />}
         style={{ marginTop: 10, marginBottom: 10 }}
       >
-        Thêm sản phẩm
+        {t("create")}
       </Button>
-      {renderAdd()}
       <Table dataSource={dataProduct} columns={columns} />
-      {renderDetail()}
+      {openModalCreate && (
+        <CreateProduct
+          open={openModalCreate}
+          onCancel={() => {
+            setOpenModalCreate(false);
+          }}
+        />
+      )}
+      {openModalEdit && (
+        <EditProduct
+          form={formEdit}
+          open={openModalEdit}
+          onCancel={() => {
+            setOpenModalEdit(false);
+          }}
+        />
+      )}
     </>
   );
 };

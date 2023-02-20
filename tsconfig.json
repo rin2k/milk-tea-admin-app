@@ -15,9 +15,20 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "@pages": ["./src/pages"]
+      "@components": ["./src/components"],
+      "@config": ["./src/config"],
+      "@constants": ["./src/constants"],
+      "@hooks": ["./src/hooks"],
+      "@layouts": ["./src/layouts"],
+      "@pages": ["./src/pages"],
+      "@redux": ["./src/redux"],
+      "@routes": ["./src/routes"],
+      "@services": ["./src/services"],
+      "@styles": ["./src/styles"],
+      "@types": ["./src/types"],
+      "@utils": ["./src/utils"]
     }
   },
   "include": ["src"]

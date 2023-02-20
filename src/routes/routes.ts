@@ -1,6 +1,6 @@
 import { pages } from "../constants/pages";
 import { CategoryPage, Home, ProductPage } from "../pages";
-import Login from "../pages/login/login";
+import { Login } from "../pages/login/login";
 
 export const routes = [
   { path: pages.dashboard, component: Home },

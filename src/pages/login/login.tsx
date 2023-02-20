@@ -1,16 +1,43 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input } from "antd";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { addInformation } from "../../redux/slices";
 
-import "./login.css";
+import { db } from "@config";
+import { COLLECTIONS } from "@constants";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { IUser } from "../../redux/slices/user.slice";
-function Login() {
+import "./login.css";
+export const Login = () => {
+  const auth = getAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
+    signInWithEmailAndPassword(auth, values.username, values.password)
+      .then(async (userCredential) => {})
+      .catch((error) => {
+        switch (error.code) {
+          case "auth/invalid-email":
+            break;
+          case "auth/user-not-found":
+            break;
+          case "auth/wrong-password":
+            break;
+
+          default:
+            break;
+        }
+        alert(error);
+      });
     let newData: IUser = {
       token: {
         refresh: "c",
@@ -24,8 +51,8 @@ function Login() {
       },
       isAuthenticated: true,
     };
-    dispatch(addInformation(newData));
-    navigate("/");
+    // dispatch(addInformation(newData));
+    // navigate("/");
   };
 
   const renderContent = () => {
@@ -35,8 +62,8 @@ function Login() {
         className="login-form"
         initialValues={{
           remember: true,
-          username: "22",
-          password: "22",
+          username: "cc@gmail.com",
+          password: "123456",
         }}
         onFinish={onFinish}
       >
@@ -102,6 +129,4 @@ function Login() {
       {renderContent()}
     </div>
   );
-}
-
-export default Login;
+};

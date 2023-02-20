@@ -14,9 +14,13 @@
     "@types/react-dom": "^18.0.0",
     "@types/redux-persist": "^4.3.1",
     "antd": "^5.1.0",
+    "craco": "^0.0.3",
+    "firebase": "^9.16.0",
+    "i18next": "^22.4.10",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^12.1.5",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.6.0",
     "react-scripts": "5.0.1",
@@ -25,9 +29,9 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject",
     "your_scrip": "",
     "rm": "rm -rf ./node_modules"
