@@ -1,7 +1,13 @@
-import { PieChartOutlined, TeamOutlined } from "@ant-design/icons";
+import {
+  PieChartOutlined,
+  TeamOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
+import { removeAdmin, RootState } from "@redux";
 import { Layout, Menu, theme } from "antd";
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { pages } from "../../constants/pages";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -11,12 +17,15 @@ export interface DefaultLayoutProps {
 }
 export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
-
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.authAdmin.isAuthenticated
+  );
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const items = [
     {
@@ -27,14 +36,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
         navigate("/");
       },
     },
-    {
-      key: "banner",
-      icon: <TeamOutlined />,
-      label: "Banner",
-      onClick: () => {
-        navigate("/banner");
-      },
-    },
+
     {
       key: "user",
       icon: <PieChartOutlined />,
@@ -46,7 +48,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     {
       key: "product",
       icon: <TeamOutlined />,
-      label: "Sản phẩm",
+      label: "Product",
       onClick: () => {
         navigate("/product");
       },
@@ -54,7 +56,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     {
       key: "category",
       icon: <PieChartOutlined />,
-      label: "Danh mục",
+      label: "Category",
       onClick: () => {
         navigate("/category");
       },
@@ -62,17 +64,25 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     {
       key: "order",
       icon: <TeamOutlined />,
-      label: "Đơn hàng",
+      label: "Orders",
       onClick: () => {
         navigate("/order");
       },
     },
+    // {
+    //   key: "information",
+    //   icon: <TeamOutlined />,
+    //   label: "Information",
+    //   onClick: () => {
+    //     navigate("/information");
+    //   },
+    // },
     {
-      key: "information",
-      icon: <TeamOutlined />,
-      label: "Thông tin",
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Logout",
       onClick: () => {
-        navigate("/information");
+        dispatch(removeAdmin());
       },
     },
   ];
@@ -83,8 +93,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     switch (selectedKey) {
       case pages.dashboard:
         return ["dashboard"];
-      case pages.banner:
-        return ["banner"];
+
       case pages.user:
         return ["user"];
       case pages.product:
@@ -97,6 +106,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
         return ["information"];
     }
   };
+  if (!isAuthenticated) return <Navigate to="/login" />;
 
   return (
     <Layout style={{ minHeight: "100vh" }}>

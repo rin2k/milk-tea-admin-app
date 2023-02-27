@@ -5,3 +5,4 @@ export * from "./login/login";
 export * from "./not-found/not-found";
 export * from "./order/order";
 export * from "./product/product";
+export * from "./user/user";

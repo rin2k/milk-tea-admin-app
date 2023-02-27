@@ -7,7 +7,7 @@ import rootReducer, { RootState } from "./root-reducer";
 const persistConfig = {
   key: "root",
   storage: storage,
-  whitelist: ["user"],
+  whitelist: ["authAdmin"],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

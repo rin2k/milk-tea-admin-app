@@ -1,7 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { db } from "@config";
-import { COLLECTIONS } from "@constants";
 import { RootState } from "@redux";
+import { EditProductService } from "@services";
 import { getBase64 } from "@utils";
 import {
   Col,
@@ -15,7 +14,6 @@ import {
 } from "antd";
 import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-import { doc, Timestamp, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
@@ -54,18 +52,21 @@ export const EditProduct: React.FC<EditProductProps> = (props) => {
   };
 
   const onFinish = (values: FormValues) => {
-    const productDoc = doc(db, COLLECTIONS.PRODUCTS, values.id);
-    updateDoc(productDoc, {
-      name: values.name,
-      description: values.description,
-      category: values.category,
-      price: values.price,
-      quantity: values.quantity,
-      image: values.image,
-      updatedAt: Timestamp.now(),
-    });
-    onCancel();
-    message.success(t("updatedSuccessfully"));
+    EditProductService(
+      values.id,
+      {
+        name: values.name,
+        description: values.description,
+        category: values.category,
+        price: values.price,
+        quantity: values.quantity,
+        image: values.image,
+      },
+      () => {
+        onCancel();
+        message.success(t("updatedSuccessfully"));
+      }
+    );
   };
 
   return (

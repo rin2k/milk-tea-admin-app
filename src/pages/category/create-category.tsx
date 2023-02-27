@@ -1,7 +1,5 @@
-import { db } from "@config";
-import { COLLECTIONS } from "@constants";
-import { Col, Form, Input, message, Modal } from "antd";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { CreateCategoryService } from "@services";
+import { Form, Input, message, Modal } from "antd";
 import { useTranslation } from "react-i18next";
 interface CreateCategoryProps {
   open: boolean;
@@ -18,16 +16,11 @@ export const CreateCategory: React.FC<CreateCategoryProps> = (props) => {
   const { t } = useTranslation([], { keyPrefix: "category.createCategory" });
 
   const onFinish = async (values: FormValues) => {
-    const categoryCollectionRef = collection(db, COLLECTIONS.CATEGORIES);
-    await addDoc(categoryCollectionRef, {
-      name: values.name,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
+    CreateCategoryService({ name: values.name }, () => {
+      form.resetFields();
+      onCancel();
+      message.success(t("addedSuccessfully"));
     });
-
-    form.resetFields();
-    onCancel();
-    message.success(t("addedSuccessfully"));
   };
 
   return (
@@ -40,16 +33,19 @@ export const CreateCategory: React.FC<CreateCategoryProps> = (props) => {
       okText={t("okText")}
       cancelText={t("cancelText")}
     >
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Col>
-          <Form.Item
-            name="name"
-            label={t("labelName")}
-            rules={[{ required: true, message: t("msgName") }]}
-          >
-            <Input inputMode={"none"} placeholder={t("hintName")} />
-          </Form.Item>
-        </Col>
+      <Form
+        form={form}
+        layout="vertical"
+        autoComplete={"off"}
+        onFinish={onFinish}
+      >
+        <Form.Item
+          name="name"
+          label={t("labelName")}
+          rules={[{ required: true, message: t("msgName") }]}
+        >
+          <Input inputMode={"none"} placeholder={t("hintName")} />
+        </Form.Item>
       </Form>
     </Modal>
   );

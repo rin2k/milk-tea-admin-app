@@ -1,11 +1,13 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import categoryReducer from "./slices/category.slice";
-import productReducer from "./slices/product.slice";
 import userReducer from "./slices/user.slice";
+import producReducer from "./slices/product.slice";
+import adminReducer from "./slices/auth-admin.slice";
 const rootReducer = combineReducers({
   user: userReducer,
-  product: productReducer,
   category: categoryReducer,
+  product: producReducer,
+  authAdmin: adminReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

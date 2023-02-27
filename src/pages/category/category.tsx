@@ -1,13 +1,11 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { db } from "@config";
-import { COLLECTIONS } from "@constants";
 
 import { useCategory } from "@hooks";
 import { RootState } from "@redux";
+import { DeleteCategoryService } from "@services";
 import { COLORS } from "@styles";
 import { ICategory } from "@types";
 import { Button, Form, message, Popconfirm, Space, Table } from "antd";
-import { deleteDoc, doc } from "firebase/firestore";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
@@ -30,9 +28,9 @@ export const CategoryPage: React.FC = () => {
   };
 
   const onConfirmDelete = (category: ICategory) => {
-    const categoryDoc = doc(db, COLLECTIONS.CATEGORIES, category.id);
-    deleteDoc(categoryDoc);
-    message.success(t("deletedSuccessfully"));
+    DeleteCategoryService(category.id, () => {
+      message.success(t("deletedSuccessfully"));
+    });
   };
 
   const columns = [

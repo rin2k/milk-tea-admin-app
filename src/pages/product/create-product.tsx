@@ -1,12 +1,10 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { db } from "@config";
-import { COLLECTIONS } from "@constants";
 import { RootState } from "@redux";
+import { CreateProductService } from "@services";
 import { getBase64 } from "@utils";
-import { Col, Form, Input, message, Modal, Select, Upload } from "antd";
+import { Form, Input, message, Modal, Select, Upload } from "antd";
 import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
@@ -20,9 +18,9 @@ interface FormValues {
   name: string;
   image: string;
   description: string;
-  price?: number;
-  quantity?: number;
-  category?: string;
+  price: number;
+  quantity: number;
+  category: string;
 }
 
 const { Option } = Select;
@@ -43,21 +41,21 @@ export const CreateProduct: React.FC<CreateProductProps> = (props) => {
   };
 
   const onFinish = async (values: FormValues) => {
-    const productCollectionRef = collection(db, COLLECTIONS.PRODUCTS);
-    await addDoc(productCollectionRef, {
-      name: values.name,
-      description: values.description,
-      category: values.category,
-      price: values.price,
-      quantity: values.quantity,
-      image: values.image,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    });
-
-    form.resetFields();
-    onCancel();
-    message.success(t("addedSuccessfully"));
+    CreateProductService(
+      {
+        name: values.name,
+        description: values.description,
+        category: values.category,
+        price: values.price,
+        quantity: values.quantity,
+        image: values.image,
+      },
+      () => {
+        form.resetFields();
+        onCancel();
+        message.success(t("addedSuccessfully"));
+      }
+    );
   };
 
   return (
@@ -71,83 +69,71 @@ export const CreateProduct: React.FC<CreateProductProps> = (props) => {
       cancelText={t("cancelText")}
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Col>
-          <Form.Item
-            name="image"
-            label={t("labelImage")}
-            rules={[{ required: true, message: t("msgImage") }]}
+        <Form.Item
+          name="image"
+          label={t("labelImage")}
+          rules={[{ required: true, message: t("msgImage") }]}
+        >
+          <Upload
+            accept=".png , .jpeg, .jpg"
+            name={"file"}
+            onChange={handleChange}
+            showUploadList={false}
+            listType={"picture-card"}
+            className="avatar-uploader"
+            beforeUpload={() => false}
+            multiple={false}
           >
-            <Upload
-              accept=".png , .jpeg, .jpg"
-              name={"file"}
-              onChange={handleChange}
-              showUploadList={false}
-              listType={"picture-card"}
-              className="avatar-uploader"
-              beforeUpload={() => false}
-              multiple={false}
-            >
-              {form.getFieldValue("image") ? (
-                <img
-                  src={form.getFieldValue("image")}
-                  alt="avatar"
-                  style={{ width: "100%" }}
-                />
-              ) : (
-                <PlusOutlined />
-              )}
-            </Upload>
-          </Form.Item>
-        </Col>
-        <Col>
-          <Form.Item
-            name="name"
-            label={t("labelName")}
-            rules={[{ required: true, message: t("msgName") }]}
-          >
-            <Input placeholder={t("hintName")} />
-          </Form.Item>
-        </Col>
-        <Col>
-          <Form.Item
-            name="description"
-            label={t("labelDescription")}
-            rules={[{ required: true, message: t("msgDescription") }]}
-          >
-            <Input placeholder={t("hintDescription")} />
-          </Form.Item>
-        </Col>
-        <Col>
-          <Form.Item
-            name="category"
-            label={t("labelCategory")}
-            rules={[{ required: true, message: t("msgCategory") }]}
-          >
-            <Select placeholder={t("hintCategory")}>
-              {category.map((item) => {
-                return <Option value={item?.id}>{item?.name}</Option>;
-              })}
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col>
-          <Form.Item
-            name="price"
-            label={t("labelPrice")}
-            rules={[{ required: true, message: t("msgPrice") }]}
-          >
-            <Input placeholder={t("hintPrice")} type={"number"} min={0} />
-          </Form.Item>
-        </Col>
-        <Col>
-          <Form.Item
-            name="quantity"
-            label={t("labelQuantity")}
-            rules={[{ required: true, message: t("msgQuantity") }]}
-          >
-            <Input placeholder={t("hintQuantity")} type={"number"} min={0} />
-          </Form.Item>
-        </Col>
+            {form.getFieldValue("image") ? (
+              <img
+                src={form.getFieldValue("image")}
+                alt="avatar"
+                style={{ width: "100%" }}
+              />
+            ) : (
+              <PlusOutlined />
+            )}
+          </Upload>
+        </Form.Item>
+        <Form.Item
+          name="name"
+          label={t("labelName")}
+          rules={[{ required: true, message: t("msgName") }]}
+        >
+          <Input placeholder={t("hintName")} />
+        </Form.Item>
+        <Form.Item
+          name="description"
+          label={t("labelDescription")}
+          rules={[{ required: true, message: t("msgDescription") }]}
+        >
+          <Input placeholder={t("hintDescription")} />
+        </Form.Item>
+        <Form.Item
+          name="category"
+          label={t("labelCategory")}
+          rules={[{ required: true, message: t("msgCategory") }]}
+        >
+          <Select placeholder={t("hintCategory")}>
+            {category.map((item) => {
+              return <Option value={item?.id}>{item?.name}</Option>;
+            })}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="price"
+          label={t("labelPrice")}
+          rules={[{ required: true, message: t("msgPrice") }]}
+        >
+          <Input placeholder={t("hintPrice")} type={"number"} min={0} />
+        </Form.Item>
+        <Form.Item
+          name="quantity"
+          label={t("labelQuantity")}
+          rules={[{ required: true, message: t("msgQuantity") }]}
+        >
+          <Input placeholder={t("hintQuantity")} type={"number"} min={0} />
+        </Form.Item>
       </Form>
     </Modal>
   );

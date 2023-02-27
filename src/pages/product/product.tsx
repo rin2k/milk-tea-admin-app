@@ -1,20 +1,15 @@
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { db } from "@config";
 import { COLLECTIONS } from "@constants";
-import { useCategory } from "@hooks";
+import { useCategory, useProduct } from "@hooks";
+import { RootState } from "@redux";
 import { COLORS } from "@styles";
 import { IProduct } from "@types";
 import { Button, Form, message, Select, Space, Table } from "antd";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-} from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { deleteDoc, doc } from "firebase/firestore";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { CreateProduct } from "./create-product";
 import { EditProduct } from "./edit-product";
 
@@ -28,23 +23,8 @@ export const ProductPage: React.FC = () => {
   const [formEdit] = Form.useForm();
 
   useCategory();
-
-  const [dataProduct, setDataProduct] = useState<Array<IProduct>>([]);
-
-  useEffect(() => {
-    const q = query(
-      collection(db, COLLECTIONS.PRODUCTS),
-      orderBy("createdAt", "desc")
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const newData: any = snapshot.docs.map((doc: any) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setDataProduct(newData);
-    });
-    return () => unsubscribe();
-  }, []);
+  useProduct();
+  const dataProduct = useSelector((state: RootState) => state.product);
 
   const showModalEdit = (product: IProduct) => {
     setOpenModalEdit(true);

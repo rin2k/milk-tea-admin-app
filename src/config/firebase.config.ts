@@ -3,14 +3,15 @@ import { getAnalytics } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBzEHy2BbTh__VmdciZmyqGORRX6jeZ7rQ",
-  authDomain: "milk-tea-eaaa8.firebaseapp.com",
-  projectId: "milk-tea-eaaa8",
-  storageBucket: "milk-tea-eaaa8.appspot.com",
-  messagingSenderId: "206985716563",
-  appId: "1:206985716563:web:acba8b004b829a4ca1f7a6",
-  measurementId: "G-D03G9GJD26",
+  apiKey: "AIzaSyAC7bbhXIHu-erlJCKoUX9x52-HeyzoRCo",
+  authDomain: "milktea-1eddc.firebaseapp.com",
+  projectId: "milktea-1eddc",
+  storageBucket: "milktea-1eddc.appspot.com",
+  messagingSenderId: "494322709938",
+  appId: "1:494322709938:web:5e9d6b2482274f077b60ab",
+  measurementId: "G-BC9GJBY0C2",
 };
 
 // Initialize Firebase

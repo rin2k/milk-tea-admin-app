@@ -83,5 +83,143 @@
     "okText": "Yes",
     "delete": "Delete"
   },
-  "imageMustSmaller": "Image must smaller"
+  "informationPage": {
+    "changePassword": "Change password",
+    "labelPhone": "Hotline",
+    "msgPhone": "Please enter",
+    "hintPhone": "Please enter",
+    "labelEmail": "Email",
+    "msgEmail": "Please enter",
+    "hintEmail": "Please enter",
+    "labelAddress": "Address",
+    "hintAddress": "Please enter",
+    "msgAddress": "Please enter"
+  },
+  "orderPage": {
+    "id": "Order ID",
+    "phone": "Phone",
+    "shipTo": "Ship to",
+    "totalCost": "Total cost",
+    "status": "Status",
+    "date": "Date",
+    "action": "Action",
+    "createOrder": {
+      "okText": "Create",
+      "cancelText": "Cancel",
+      "lableUser": "User",
+      "msgUser": "Please choose",
+      "hintUser": "Choose user",
+      "labelName": "Name",
+      "msgName": "Please enter",
+      "hintName": "Please enter",
+      "labelAddress": "Address",
+      "hintAddress": "Please enter",
+      "msgAddress": "Please enter",
+      "labelPhone": "Phone",
+      "msgPhone": "Please enter",
+      "hintPhone": "Please enter",
+      "orderProducts": {
+        "labelName": "Product name",
+        "hintName": "Please chooose",
+        "msgName": "Please chooose",
+        "labelQuantity": "Quantity",
+        "hintQuantity": "Please enter",
+        "msgQuantity": "Please enter"
+      },
+      "addFiled": "Add product",
+      "deleteField": "Delete",
+      "available": "available"
+    }
+  },
+  "orderStatus": {
+    "pending": "Pending",
+    "shipping": "Shipping",
+    "canceled": "Canceled",
+    "completed": "Completed"
+  },
+  "userPage": {
+    "createUser": {
+      "okText": "Create",
+      "cancelText": "Cancel",
+      "labelFullname": "Fullname",
+      "msgFullname": "Please enter",
+      "hintFullname": "Please enter",
+      "labelEmail": "Email",
+      "msgEmail": "Please enter",
+      "hintEmail": "Please enter",
+      "labelPhone": "Phone",
+      "msgPhone": "Please enter",
+      "hintPhone": "Please enter",
+      "labelPassword": "Password",
+      "msgPassword": "Please enter",
+      "hintPassword": "Please enter",
+      "labelAddress": "Address",
+      "hintAddress": "Please enter",
+      "msgAddress": "Please enter",
+      "addresses": {
+        "labelName": "Name",
+        "msgName": "Please enter",
+        "hintName": "Please enter",
+        "labelAddress": "Address",
+        "hintAddress": "Please enter",
+        "msgAddress": "Please enter",
+        "labelPhone": "Phone",
+        "msgPhone": "Please enter",
+        "hintPhone": "Please enter"
+      },
+
+      "addFiled": "Add field address",
+      "deleteField": "Delete",
+      "validEmail": "The input is not valid E-mail!",
+      "addedSuccessfully": "User added!"
+    },
+
+    "editUser": {
+      "okText": "Update",
+      "cancelText": "Cancel",
+      "labelId": "User id",
+      "labelFullname": "Fullname",
+      "msgFullname": "Please enter",
+      "hintFullname": "Please enter",
+      "labelEmail": "Email",
+      "msgEmail": "Please enter",
+      "hintEmail": "Please enter",
+      "labelPhone": "Phone",
+      "msgPhone": "Please enter",
+      "hintPhone": "Please enter",
+      "labelAddress": "Address",
+      "hintAddress": "Please enter",
+      "msgAddress": "Please enter",
+      "addresses": {
+        "labelName": "Name",
+        "msgName": "Please enter",
+        "hintName": "Please enter",
+        "labelAddress": "Address",
+        "hintAddress": "Please enter",
+        "msgAddress": "Please enter",
+        "labelPhone": "Phone",
+        "msgPhone": "Please enter",
+        "hintPhone": "Please enter"
+      },
+
+      "addFiled": "Add field address",
+      "deleteField": "Delete",
+      "validEmail": "The input is not valid E-mail!",
+      "updatedSuccessfully": "Updated successfully!"
+    },
+    "fullname": "Fullname",
+    "email": "Email",
+    "action": "Action",
+    "date": "Date join"
+  },
+
+  "create": "Create",
+  "imageMustSmaller": "Image must smaller",
+
+  "auth/email-already-in-use": "That email address is already in use!",
+  "auth/invalid-email": "That email address is invalid!",
+  "auth/user-not-found": "User not found",
+  "auth/wrong-password": "Wrong password",
+
+  "auth/weak-password": "Weak password!"
 }

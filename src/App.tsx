@@ -2,13 +2,13 @@ import "@config";
 import { RootState } from "@redux";
 import { Fragment } from "react";
 import { useSelector } from "react-redux";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Router } from "react-router-dom";
 import "./App.css";
 import { DefaultLayout } from "./layouts/components/default-layout";
 import { routes } from "./routes/routes";
 function App() {
   const isAuthenticated = useSelector(
-    (state: RootState) => state.user.isAuthenticated
+    (state: RootState) => state.authAdmin.isAuthenticated
   );
 
   return (

@@ -1,7 +1,5 @@
-import { db } from "@config";
-import { COLLECTIONS } from "@constants";
+import { EditCategoryService } from "@services";
 import { Col, Form, FormInstance, Input, message, Modal } from "antd";
-import { doc, Timestamp, updateDoc } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 interface EditCategoryProps {
   open: boolean;
@@ -20,14 +18,17 @@ export const EditCategory: React.FC<EditCategoryProps> = (props) => {
   const { t } = useTranslation([], { keyPrefix: "category.editCategory" });
 
   const onFinish = (values: FormValues) => {
-    form.resetFields();
-    const bookDoc = doc(db, COLLECTIONS.CATEGORIES, values.id);
-    updateDoc(bookDoc, {
-      name: values.name,
-      updatedAt: Timestamp.now(),
-    });
-    onCancel();
-    message.success(t("updatedSuccessfully"));
+    EditCategoryService(
+      values.id,
+      {
+        name: values.name,
+      },
+      () => {
+        form.resetFields();
+        onCancel();
+        message.success(t("updatedSuccessfully"));
+      }
+    );
   };
 
   return (
@@ -40,25 +41,26 @@ export const EditCategory: React.FC<EditCategoryProps> = (props) => {
       okText={t("okText")}
       cancelText={t("cancelText")}
     >
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Col>
-          <Form.Item
-            name="id"
-            label={t("labelId")}
-            rules={[{ required: true, message: t("msgName") }]}
-          >
-            <Input disabled placeholder={t("hintName")} />
-          </Form.Item>
-        </Col>
-        <Col>
-          <Form.Item
-            name="name"
-            label={t("labelName")}
-            rules={[{ required: true, message: t("msgName") }]}
-          >
-            <Input placeholder={t("hintName")} />
-          </Form.Item>
-        </Col>
+      <Form
+        form={form}
+        layout="vertical"
+        autoComplete={"off"}
+        onFinish={onFinish}
+      >
+        <Form.Item
+          name="id"
+          label={t("labelId")}
+          rules={[{ required: true, message: t("msgName") }]}
+        >
+          <Input disabled placeholder={t("hintName")} />
+        </Form.Item>
+        <Form.Item
+          name="name"
+          label={t("labelName")}
+          rules={[{ required: true, message: t("msgName") }]}
+        >
+          <Input placeholder={t("hintName")} />
+        </Form.Item>
       </Form>
     </Modal>
   );
