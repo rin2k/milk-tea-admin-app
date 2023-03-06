@@ -1,21 +1,16 @@
 import { db } from "@config";
 import { COLLECTIONS } from "@constants";
-import { getAuth } from "firebase/auth";
+import { ProductStatus } from "@types";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
-const auth = getAuth();
-
-export interface IInputCreateProductService {
-  name: string;
-  description: string;
-  category: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
-
 export const CreateProductService = async (
-  input: IInputCreateProductService,
+  input: {
+    name: string;
+    description: string;
+    category: string;
+    price: number;
+    image: string;
+  },
   onSuccess: () => void
 ) => {
   const collectionRef = collection(db, COLLECTIONS.PRODUCTS);
@@ -23,6 +18,7 @@ export const CreateProductService = async (
     ...input,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
+    status: ProductStatus.ENABLED,
   })
     .then(() => {
       onSuccess();

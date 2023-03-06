@@ -1,13 +1,14 @@
 import {
+  LogoutOutlined,
   PieChartOutlined,
   TeamOutlined,
-  LogoutOutlined,
 } from "@ant-design/icons";
 import { removeAdmin, RootState } from "@redux";
 import { Layout, Menu, theme } from "antd";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { pages } from "../../constants/pages";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -16,6 +17,10 @@ export interface DefaultLayoutProps {
   children: React.ReactNode;
 }
 export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
+  const { t } = useTranslation([], { keyPrefix: "adminDefaultLayout" });
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [collapsed, setCollapsed] = useState(false);
   const isAuthenticated = useSelector(
     (state: RootState) => state.authAdmin.isAuthenticated
@@ -24,14 +29,11 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   const items = [
     {
       key: "dashboard",
       icon: <PieChartOutlined />,
-      label: "Dashboard",
+      label: t("dashboard"),
       onClick: () => {
         navigate("/");
       },
@@ -40,7 +42,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     {
       key: "user",
       icon: <PieChartOutlined />,
-      label: "User",
+      label: t("user"),
       onClick: () => {
         navigate("/user");
       },
@@ -48,7 +50,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     {
       key: "product",
       icon: <TeamOutlined />,
-      label: "Product",
+      label: t("product"),
       onClick: () => {
         navigate("/product");
       },
@@ -56,7 +58,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     {
       key: "category",
       icon: <PieChartOutlined />,
-      label: "Category",
+      label: t("category"),
       onClick: () => {
         navigate("/category");
       },
@@ -64,23 +66,43 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     {
       key: "order",
       icon: <TeamOutlined />,
-      label: "Orders",
+      label: t("orders"),
       onClick: () => {
         navigate("/order");
       },
     },
-    // {
-    //   key: "information",
-    //   icon: <TeamOutlined />,
-    //   label: "Information",
-    //   onClick: () => {
-    //     navigate("/information");
-    //   },
-    // },
+    {
+      key: "admin",
+      icon: <TeamOutlined />,
+      label: t("admin"),
+      children: [
+        {
+          key: "information",
+          label: t("information"),
+          onClick: () => {
+            navigate(pages.information);
+          },
+        },
+        {
+          key: "change-email",
+          label: t("changeEmail"),
+          onClick: () => {
+            navigate(pages.change_email);
+          },
+        },
+        {
+          key: "change-password",
+          label: t("changePassword"),
+          onClick: () => {
+            navigate(pages.change_password);
+          },
+        },
+      ],
+    },
     {
       key: "logout",
       icon: <LogoutOutlined />,
-      label: "Logout",
+      label: t("logOut"),
       onClick: () => {
         dispatch(removeAdmin());
       },
@@ -93,7 +115,6 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
     switch (selectedKey) {
       case pages.dashboard:
         return ["dashboard"];
-
       case pages.user:
         return ["user"];
       case pages.product:
@@ -104,9 +125,14 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
         return ["order"];
       case pages.information:
         return ["information"];
+      case pages.change_email:
+        return ["change-email"];
+      case pages.change_password:
+        return ["change-password"];
     }
   };
-  if (!isAuthenticated) return <Navigate to="/login" />;
+
+  if (!isAuthenticated) return <Navigate to={pages.login} />;
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -130,8 +156,11 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
         />
       </Sider>
       <Layout className="site-layout">
-        <Header style={{ padding: 0, background: colorBgContainer }} />
-        <Content style={{ margin: "0 16px" }}>{children}</Content>
+        <Header style={{ padding: 10, background: colorBgContainer }} />
+        <Content style={{ margin: "16px" }}>
+          {/* <Outlet /> */}
+          {children}
+        </Content>
         <Footer style={{ textAlign: "center" }}>Admin Milk Tea</Footer>
       </Layout>
     </Layout>

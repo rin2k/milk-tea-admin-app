@@ -1,6 +1,7 @@
 import { db } from "@config";
 import { COLLECTIONS } from "@constants";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { UserStatus } from "@types";
 
 export interface IInputEditUserService {
   fullname?: string;
@@ -9,6 +10,7 @@ export interface IInputEditUserService {
     address: string;
     phone: string;
   }>;
+  status?: keyof typeof UserStatus;
 }
 
 export const EditUserService = (

@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 export const useProduct = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    const unsubscribe = GetProductsService((data) => {
+    const unsubscribe = GetProductsService({}, (data) => {
       dispatch(addProduct(data));
     });
     return () => unsubscribe();
